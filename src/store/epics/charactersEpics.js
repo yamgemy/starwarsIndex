@@ -22,12 +22,11 @@ const requestCharactersEpic = (action$, state$) => {
     debounceTime(500),
     switchMap((action) => {
       const curentPage = state$.value.charactersReducer.pages
-      devLog(state$.value.charactersReducer, 24)
       return from(requestCharactersList(curentPage + 1)).pipe(
         map((result) => {
           const { data } = result
-          devLog(data, 33)
-          return actionOnRequestCharactersSuccess(data)
+          //todo fetch many homeworlds
+          return actionOnRequestCharactersSuccess(data.results)
         }),
         catchError((e) => {
           devLog(e, 36)

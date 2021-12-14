@@ -1,4 +1,5 @@
 import { CHARACTERS_TYPES as TYPE } from '../types'
+import { normalizeArrayOfObjects } from '../../services/dataParser.js'
 
 const initState = {
   pages: 0,
@@ -10,7 +11,10 @@ export const charactersReducer = (state = initState, action) => {
     case TYPE.REQUEST_CHARS_SUCCESS: {
       return {
         ...state,
-        characters: { ...state.characters, ...action.payload },
+        characters: {
+          ...state.characters,
+          ...normalizeArrayOfObjects(action.payload, 'url'),
+        },
         pages: state.pages + 1,
       }
     }
