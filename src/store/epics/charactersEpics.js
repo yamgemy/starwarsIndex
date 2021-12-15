@@ -8,11 +8,15 @@ import {
   switchMap,
   debounceTime,
   concat,
+  merge,
 } from 'rxjs'
 import { map, catchError, finalize, delay } from 'rxjs/operators'
 import { requestCharactersList } from '../../services/api/characters'
 import { onRequestFailed } from '../actions/generalActions'
-import { actionOnRequestCharactersSuccess } from '../actions/charactersActions'
+import {
+  actionOnRequestCharactersSuccess,
+  actionRequestCharacters,
+} from '../actions/charactersActions'
 import { actionRequestAHomeworld } from '../actions/homeworldsActions'
 import {
   getIdFromUrl,
@@ -24,17 +28,18 @@ const devLog = MyLogger(true, 'charactersEpics')
 const requestCharactersEpic = (action$, state$) => {
   return action$.pipe(
     ofType(TYPE.REQUEST_CHARACTERS),
-    debounceTime(500),
+    debounceTime(500), //prevents firing duplicate request
     switchMap((action) => {
       const { pages } = state$.value.charactersReducer
       return from(requestCharactersList(pages + 1)).pipe(
-        map((result) => {
+        concatMap((result) => {
+          //attaches new data after previous order completes
           const { data } = result
           const charsWithWorldIds = data.results.map((char) => {
             const worldId = getIdFromUrl(char['homeworld'])
             return { ...char, worldId: worldId }
           })
-          return actionOnRequestCharactersSuccess(charsWithWorldIds)
+          return of(actionOnRequestCharactersSuccess(charsWithWorldIds))
         }),
         catchError((e) => {
           devLog(e, 36)
@@ -45,7 +50,7 @@ const requestCharactersEpic = (action$, state$) => {
   )
 }
 
-const requestCharactersSuccessEpic = (action$, state$) => {
+const onRequestCharactersSuccessEpic = (action$, state$) => {
   return action$.pipe(
     ofType(TYPE.REQUEST_CHARS_SUCCESS),
     mergeMap((action) => {
@@ -64,7 +69,8 @@ const requestCharactersSuccessEpic = (action$, state$) => {
         actionsOfRequestWorlds,
         'payload',
       )
-      return concat(uniqueActions).pipe(
+      return merge(uniqueActions).pipe(
+        //instead of concat
         catchError((e) => {
           devLog(e, 64)
           return of(onRequestFailed(action))
@@ -74,4 +80,4 @@ const requestCharactersSuccessEpic = (action$, state$) => {
   )
 }
 
-module.exports = { requestCharactersEpic, requestCharactersSuccessEpic }
+module.exports = { requestCharactersEpic, onRequestCharactersSuccessEpic }

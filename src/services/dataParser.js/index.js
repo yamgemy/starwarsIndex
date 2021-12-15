@@ -12,7 +12,7 @@ export const getIdFromUrl = (url) => {
 export const normalizeArrayOfObjects = (ObjsArray, targetProp) => {
   const normalized = ObjsArray.reduce((accu, item) => {
     try {
-      const testedKey = getIdFromUrl(item[targetProp])
+      const testedKey = item['id'] ? item['id'] : getIdFromUrl(item[targetProp])
       //implicitly skips an item if the targetProp is corrupt
       return testedKey !== -1
         ? { ...accu, [testedKey]: { ...item, id: testedKey } }
@@ -27,4 +27,8 @@ export const normalizeArrayOfObjects = (ObjsArray, targetProp) => {
 
 export const getUniqueArrayOfObjects = (ObjsArray, targetProp) => {
   return uniqBy(ObjsArray, targetProp)
+}
+
+export const sortArrayByItemName = (targetArray) => {
+  return targetArray.sort((a, b) => a.name.localeCompare(b.name))
 }
