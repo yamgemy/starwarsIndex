@@ -13,10 +13,7 @@ import {
 import { map, catchError, finalize, delay } from 'rxjs/operators'
 import { requestCharactersList } from '../../services/api/characters'
 import { onRequestFailed } from '../actions/generalActions'
-import {
-  actionOnRequestCharactersSuccess,
-  actionRequestCharacters,
-} from '../actions/charactersActions'
+import { actionOnRequestCharactersSuccess } from '../actions/charactersActions'
 import { actionRequestAHomeworld } from '../actions/homeworldsActions'
 import {
   getIdFromUrl,

@@ -1,0 +1,56 @@
+{
+  "hairColors": {
+    "blond": "#FFF97C",
+    "blonde": "#FFF97C",
+    "brown": "#883332",
+    "white": "#F5F5F5",
+    "black": "black",
+    "none": "#F5F5F5",
+    "auburn": "#900F0F",
+    "n/a": "#F5F5F5"
+  },
+  "hairTypes": {
+    "male": "Fonze",
+    "female": "Danny",
+    "hermaphrodite": "MrT",
+    "n/a": "Bald"
+  },
+  "skinColors": {
+    "white": "#F5F5F5",
+    "fair": "#FFEDED",
+    "gold": "#FDC85B",
+    "white, blue": "#B9F9FE",
+    "dark": "#3F3131",
+    "light": "#F7F5E3",
+    "white, red": "#FFC1C1",
+    "unknown": "black",
+    "green": "green",
+    "green-tan, brown": "#516146",
+    "pale": "#F7F6E4",
+    "metal": "#C8C8C8",
+    "brown mottle": "#814242",
+    "brown": "#883332",
+    "mottled green": "#5E8468",
+    "orange": "#EF701D",
+    "blue, grey": "#8EB6CE",
+    "grey, red": "#BB8989",
+    "red": "red",
+    "blue": "blue",
+    "grey, blue": "#8EB6CE",
+    "grey, green, yellow": "#ABB583",
+    "yellow": "yellow",
+    "tan": "#904949",
+    "fair, green, yellow": "#E3EBBB",
+    "silver, red": "#E7C5C5",
+    "green, grey": "#B6C6A1",
+    "red, blue, white": "#C0AED4",
+    "brown, white": "#B07D75",
+    "none": "white"
+  },
+  "eyeType": {
+    "male": "Eyes",
+    "female": "Eyeshadow",
+    "hermaphrodite": "Round",
+    "n/a": "Smiling"
+  }
+}

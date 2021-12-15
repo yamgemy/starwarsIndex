@@ -3,18 +3,11 @@ import React, { useEffect } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import RootStack from './RootStack'
-
-export let navigationContext = null
+import { navigationRef } from './navigator'
 
 export default () => {
-  const navigationRef = React.useRef()
-
-  const onNavigationReady = () => {
-    navigationContext = React.createContext({ navigationRef })
-  }
-
   return (
-    <NavigationContainer ref={navigationRef} onReady={onNavigationReady}>
+    <NavigationContainer ref={navigationRef}>
       <SafeAreaProvider>
         <RootStack />
       </SafeAreaProvider>
