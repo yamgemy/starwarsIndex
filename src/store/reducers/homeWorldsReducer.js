@@ -1,15 +1,7 @@
 import { HOMEWORLDS_TYPE as TYPE } from '../types'
-import { getIdFromUrl } from '../../services/dataParser.js'
+import { normalizeArrayOfObjects } from '../../services/dataParser.js'
 
 const initState = {
-  mock: {
-    23: {
-      name: 'planet1',
-    },
-    25: {
-      name: 'planet1',
-    },
-  },
   homeworlds: {},
 }
 
@@ -20,6 +12,15 @@ export const homeWorldsReducer = (state = initState, action) => {
       return {
         ...state,
         homeworlds: { ...state.homeworlds, [worldId]: world },
+      }
+    }
+    case TYPE.REQUEST_MULTI_WORLDS_SUCCESS: {
+      return {
+        ...state,
+        homeworlds: {
+          ...state.homeworlds,
+          ...normalizeArrayOfObjects(action.payload, 'url'),
+        },
       }
     }
     default:

@@ -8,14 +8,21 @@ import {
   switchMap,
   debounceTime,
   concat,
+  merge,
 } from 'rxjs'
 import { map, catchError, finalize, delay } from 'rxjs/operators'
 import { requestAHomeWorld } from '../../services/api/homeworlds'
-import { actionOnRequestAHomeworldSuccess } from '../actions/homeworldsActions'
+import { createMultipleRequestsPromise } from '../../services/axiosManager.js'
+import {
+  actionOnRequestAHomeworldSuccess,
+  actionOnRequestMultipleWorldsSuccess,
+} from '../actions/homeworldsActions'
 import { onRequestFailed } from '../actions/generalActions'
+import { getUniqueArrayOfObjects } from '../../services/dataParser.js'
 import MyLogger from '../../services/dev/MyLogger'
 const devLog = MyLogger(true, 'homeworldEpics')
 
+//not in use
 const requestAHomeWorldEpic = (action$, state$) => {
   return action$.pipe(
     ofType(TYPE.REQUEST_HOMEWORLD),
@@ -36,4 +43,34 @@ const requestAHomeWorldEpic = (action$, state$) => {
   )
 }
 
-module.exports = { requestAHomeWorldEpic }
+//in use
+const requestMultipleWorldsEpic = (action$, state$) => {
+  return action$.pipe(
+    ofType(TYPE.REQUEST_MULTI_HOMEWORLDS),
+    mergeMap((action) => {
+      const { homeworlds } = state$.value.homeWorldsReducer
+      const uniqueWorldsRequests = getUniqueArrayOfObjects(
+        action.payload,
+        'worldId',
+      ).reduce((accu, i) => {
+        if (!homeworlds[i.worldId]) {
+          return [...accu, requestAHomeWorld(i.worldId)]
+        } else {
+          return accu
+        }
+      }, [])
+      return from(Promise.all(uniqueWorldsRequests)).pipe(
+        map((resultsArr) => {
+          const worlds = resultsArr.map((item) => item.data)
+          return actionOnRequestMultipleWorldsSuccess(worlds)
+        }),
+        catchError((e) => {
+          devLog(e, 72)
+          return of(onRequestFailed(action))
+        }),
+      )
+    }),
+  )
+}
+
+module.exports = { requestAHomeWorldEpic, requestMultipleWorldsEpic }

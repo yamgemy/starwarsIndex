@@ -37,9 +37,6 @@ const configureAxios = () => {
   return instance
 }
 
-//axios instance DON'T need to be unique per axios call
-const anAxiosInstance = configureAxios()
-
 const createRequestRetryPromise = (
   defaultConfig,
   totalTries = serverConfigs.defaultTotalAxiosTries,
@@ -60,6 +57,7 @@ const createRequestRetryPromise = (
     //the cancel token must be unique to each axios call, otherwise timeout does not work on retries
     const { source, config } = createCancelConfigs()
     const combinedConfig = { ...defaultConfig, ...config }
+    const anAxiosInstance = configureAxios()
     try {
       const result = await anAxiosInstance(combinedConfig) //result is also available in intercepter
       mainResolve(Promise.resolve(result)) //this goes into the from(...) function inside epics
