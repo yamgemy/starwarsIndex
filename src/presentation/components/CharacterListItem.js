@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 import Spinner from 'react-native-spinkit'
 import { navigate } from '../navigation/navigator'
 import MyLogger from '../../services/dev/MyLogger'
-const devLog = MyLogger(true, 'CharacterListItemSimple')
+const devLog = MyLogger(true, 'CharacterListItem')
 
 export default React.memo(
   ({ character, worldId }) => {

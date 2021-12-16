@@ -10,7 +10,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import { actionRequestCharacters } from '../../../store/actions/charactersActions'
 import MyLogger from '../../../services/dev/MyLogger'
-import CharacterListItemSimple from '../../components/CharacterListItemSimple'
+import CharacterListItem from '../../components/CharacterListItem'
 import { sortArrayByItemName } from '../../../services/dataParser.js'
 import { CHARACTERS_TYPES as TYPE } from '../../../store/types'
 import Spinner from 'react-native-spinkit'
@@ -34,9 +34,9 @@ export default () => {
     },
   )
 
-  const renderItem = ({ item }) => (
-    <CharacterListItemSimple character={item} worldId={item.worldId} />
-  )
+  const renderItem = (
+    { item }, //React.memo already used in CharacterListItem
+  ) => <CharacterListItem character={item} worldId={item.worldId} />
 
   const renderFooter = React.memo(() => {
     return (
