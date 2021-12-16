@@ -10,7 +10,7 @@ import {
   concat,
   merge,
 } from 'rxjs'
-import { map, catchError, finalize, delay } from 'rxjs/operators'
+import { map, catchError } from 'rxjs/operators'
 import { requestCharactersList } from '../../services/api/characters'
 import { onRequestFailed } from '../actions/generalActions'
 import { actionOnRequestCharactersSuccess } from '../actions/charactersActions'

@@ -1,10 +1,10 @@
-import React, { useEffect, useContext } from 'react'
+import React from 'react'
 import { View, Text, StyleSheet, TouchableNativeFeedback } from 'react-native'
 import { useSelector } from 'react-redux'
 import Spinner from 'react-native-spinkit'
 import { navigate } from '../navigation/navigator'
 import MyLogger from '../../services/dev/MyLogger'
-const devLog = MyLogger(true, 'CharacterListItemSimple')
+const devLog = MyLogger(true, 'CharacterListItem')
 
 export default React.memo(
   ({ character, worldId }) => {
@@ -12,9 +12,9 @@ export default React.memo(
       world: homeWorldsReducer.homeworlds[worldId],
     }))
 
-    const onCharPressed = () => {
+    const onCharPressed = React.useCallback(() => {
       navigate('CharacterDetails', character)
-    }
+    }, [])
 
     return (
       <View style={sty.pressable}>
@@ -43,7 +43,9 @@ export default React.memo(
     )
   },
   (prev, next) => {
-    return true
+    if (prev.character.id === next.character.id) {
+      return true
+    }
   },
 )
 

@@ -10,7 +10,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import { actionRequestCharacters } from '../../../store/actions/charactersActions'
 import MyLogger from '../../../services/dev/MyLogger'
-import CharacterListItemSimple from '../../components/CharacterListItemSimple'
+import CharacterListItem from '../../components/CharacterListItem'
 import { sortArrayByItemName } from '../../../services/dataParser.js'
 import { CHARACTERS_TYPES as TYPE } from '../../../store/types'
 import Spinner from 'react-native-spinkit'
@@ -20,30 +20,23 @@ const sortIcon = require('../../../assets/sortAZ.png')
 export default () => {
   const dispatch = useDispatch()
   const [doSort, setDoSort] = useState(false)
-  const { charactersArray = [], endReached = false } = useSelector(
+  const { flatListData = [], endOfPages = false } = useSelector(
     ({ charactersReducer, generalReducer }) => {
-      const flatListdata = Object.values(charactersReducer.characters)
-      const endReached =
-        -1 !==
-        generalReducer.failedRequests.findIndex(
-          (item) => item.type === TYPE.REQUEST_CHARACTERS && 'error' in item,
-        )
+      const charactersArray = Object.values(charactersReducer.characters)
+      const endOfPages =
+        generalReducer.failedRequests[`${TYPE.REQUEST_CHARACTERS}404`]
       return {
-        endReached,
-        charactersArray: doSort
-          ? sortArrayByItemName(flatListdata) //runs everytime data changes while in sort mode
-          : flatListdata,
+        endOfPages,
+        flatListData: doSort
+          ? sortArrayByItemName(charactersArray) //runs everytime data changes while in sort mode
+          : charactersArray,
       }
     },
   )
 
-  useEffect(() => {
-    dispatch(actionRequestCharacters())
-  }, [])
-
-  const renderItem = ({ item }) => {
-    return <CharacterListItemSimple character={item} worldId={item.worldId} />
-  }
+  const renderItem = (
+    { item }, //React.memo already used in CharacterListItem
+  ) => <CharacterListItem character={item} worldId={item.worldId} />
 
   const renderFooter = React.memo(() => {
     return (
@@ -52,22 +45,31 @@ export default () => {
           type={'Wave'}
           size={28}
           color={'yellow'}
-          isVisible={!endReached}
+          isVisible={!endOfPages}
         />
       </View>
     )
   })
 
-  const onEndReached = ({ distanceFromEnd }) => {
-    devLog(distanceFromEnd, 25)
-    if (endReached === false) {
-      dispatch(actionRequestCharacters())
-    }
-  }
+  const onEndReached = React.useCallback(
+    ({ distanceFromEnd }) => {
+      devLog(distanceFromEnd, 25)
+      if (endOfPages === false) {
+        dispatch(actionRequestCharacters())
+      }
+    },
+    [endOfPages],
+  )
 
-  const onSortPressed = () => {
+  const onSortPressed = React.useCallback(() => {
     setDoSort((prev) => !prev)
-  }
+  }, [])
+
+  const extractKey = React.useCallback((item) => item.id, [])
+
+  useEffect(() => {
+    dispatch(actionRequestCharacters())
+  }, [])
 
   return (
     <View style={sty.container}>
@@ -82,17 +84,17 @@ export default () => {
         </TouchableOpacity>
       </View>
       <View style={sty.list}>
-        <If condition={charactersArray.length > 0}>
+        <If condition={flatListData.length > 0}>
           <FlatList
-            data={charactersArray}
+            data={flatListData}
             renderItem={renderItem}
-            keyExtractor={(item) => item.id}
+            keyExtractor={extractKey}
             onEndReached={onEndReached}
             onEndReachedThreshold={0.2}
             ListFooterComponent={renderFooter}
           />
         </If>
-        <If condition={charactersArray.length === 0}>
+        <If condition={flatListData.length === 0}>
           <View style={{ alignItems: 'center', justifyContent: 'center' }}>
             <Spinner size={130} type={'Pulse'} color={'#6FF0FF'} />
           </View>
@@ -111,7 +113,6 @@ const sty = StyleSheet.create({
   },
   topPanel: {
     backgroundColor: '#2A494D',
-    //height: '5%',
     height: 40,
     width: '100%',
     flexDirection: 'row',
