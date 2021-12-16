@@ -25,22 +25,21 @@ const devLog = MyLogger(true, 'charactersEpics')
 const requestCharactersEpic = (action$, state$) => {
   return action$.pipe(
     ofType(TYPE.REQUEST_CHARACTERS),
-    debounceTime(500), //prevents firing duplicate request
-    switchMap((action) => {
+    mergeMap((action) => {
       const { pages } = state$.value.charactersReducer
       return from(requestCharactersList(pages + 1)).pipe(
-        concatMap((result) => {
+        map((result) => {
           //attaches new data after previous order completes
           const { data } = result
           const charsWithWorldIds = data.results.map((char) => {
             const worldId = getIdFromUrl(char['homeworld'])
             return { ...char, worldId: worldId }
           })
-          return of(actionOnRequestCharactersSuccess(charsWithWorldIds))
+          return actionOnRequestCharactersSuccess(charsWithWorldIds)
         }),
         catchError((e) => {
           devLog(e, 36)
-          return of(onRequestFailed(action))
+          return of(onRequestFailed(action, e))
         }),
       )
     }),

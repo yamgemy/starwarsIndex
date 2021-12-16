@@ -12,6 +12,7 @@ import { actionRequestCharacters } from '../../../store/actions/charactersAction
 import MyLogger from '../../../services/dev/MyLogger'
 import CharacterListItemSimple from '../../components/CharacterListItemSimple'
 import { sortArrayByItemName } from '../../../services/dataParser.js'
+import { CHARACTERS_TYPES as TYPE } from '../../../store/types'
 import Spinner from 'react-native-spinkit'
 const devLog = MyLogger(true, 'CharacterList')
 const sortIcon = require('../../../assets/sortAZ.png')
@@ -19,14 +20,22 @@ const sortIcon = require('../../../assets/sortAZ.png')
 export default () => {
   const dispatch = useDispatch()
   const [doSort, setDoSort] = useState(false)
-  const { charactersArray = [] } = useSelector(({ charactersReducer }) => {
-    const flatListdata = Object.values(charactersReducer.characters)
-    return {
-      charactersArray: doSort
-        ? sortArrayByItemName(flatListdata) //runs everytime data changes while in sort mode
-        : flatListdata,
-    }
-  })
+  const { charactersArray = [], endReached = false } = useSelector(
+    ({ charactersReducer, generalReducer }) => {
+      const flatListdata = Object.values(charactersReducer.characters)
+      const endReached =
+        -1 !==
+        generalReducer.failedRequests.findIndex(
+          (i) => i.type === TYPE.REQUEST_CHARACTERS && 'error' in i,
+        )
+      return {
+        endReached,
+        charactersArray: doSort
+          ? sortArrayByItemName(flatListdata) //runs everytime data changes while in sort mode
+          : flatListdata,
+      }
+    },
+  )
 
   useEffect(() => {
     dispatch(actionRequestCharacters())
@@ -36,22 +45,28 @@ export default () => {
     return <CharacterListItemSimple character={item} worldId={item.worldId} />
   }
 
+  const renderFooter = React.memo(() => {
+    return (
+      <View style={sty.footer}>
+        <Spinner
+          type={'Wave'}
+          size={28}
+          color={'yellow'}
+          isVisible={!endReached}
+        />
+      </View>
+    )
+  })
+
   const onEndReached = ({ distanceFromEnd }) => {
     devLog(distanceFromEnd, 25)
-    dispatch(actionRequestCharacters())
+    if (endReached === false) {
+      dispatch(actionRequestCharacters())
+    }
   }
 
   const onSortPressed = () => {
     setDoSort((prev) => !prev)
-
-    const hairs = charactersArray.reduce((a, i) => {
-      if (!a.includes(i.eye_color)) {
-        return [...a, i.eye_color]
-      } else {
-        return a
-      }
-    }, [])
-    devLog(hairs, 48)
   }
 
   return (
@@ -74,6 +89,7 @@ export default () => {
             keyExtractor={(item) => item.id}
             onEndReached={onEndReached}
             onEndReachedThreshold={0.2}
+            ListFooterComponent={renderFooter}
           />
         </If>
         <If condition={charactersArray.length === 0}>
@@ -123,5 +139,12 @@ const sty = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     marginTop: '3%',
+  },
+  footer: {
+    height: 50,
+    backgroundColor: 'transparent',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 })
