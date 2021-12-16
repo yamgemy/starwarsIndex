@@ -20,30 +20,26 @@ const sortIcon = require('../../../assets/sortAZ.png')
 export default () => {
   const dispatch = useDispatch()
   const [doSort, setDoSort] = useState(false)
-  const { charactersArray = [], endReached = false } = useSelector(
+  const { flatListData = [], endOfPages = false } = useSelector(
     ({ charactersReducer, generalReducer }) => {
-      const flatListdata = Object.values(charactersReducer.characters)
-      const endReached =
+      const charactersArray = Object.values(charactersReducer.characters)
+      const endOfPages =
         -1 !==
         generalReducer.failedRequests.findIndex(
           (item) => item.type === TYPE.REQUEST_CHARACTERS && 'error' in item,
         )
       return {
-        endReached,
-        charactersArray: doSort
-          ? sortArrayByItemName(flatListdata) //runs everytime data changes while in sort mode
-          : flatListdata,
+        endOfPages,
+        flatListData: doSort
+          ? sortArrayByItemName(charactersArray) //runs everytime data changes while in sort mode
+          : charactersArray,
       }
     },
   )
 
-  useEffect(() => {
-    dispatch(actionRequestCharacters())
-  }, [])
-
-  const renderItem = ({ item }) => {
-    return <CharacterListItemSimple character={item} worldId={item.worldId} />
-  }
+  const renderItem = ({ item }) => (
+    <CharacterListItemSimple character={item} worldId={item.worldId} />
+  )
 
   const renderFooter = React.memo(() => {
     return (
@@ -52,22 +48,31 @@ export default () => {
           type={'Wave'}
           size={28}
           color={'yellow'}
-          isVisible={!endReached}
+          isVisible={!endOfPages}
         />
       </View>
     )
   })
 
-  const onEndReached = ({ distanceFromEnd }) => {
-    devLog(distanceFromEnd, 25)
-    if (endReached === false) {
-      dispatch(actionRequestCharacters())
-    }
-  }
+  const onEndReached = React.useCallback(
+    ({ distanceFromEnd }) => {
+      devLog(distanceFromEnd, 25)
+      if (endOfPages === false) {
+        dispatch(actionRequestCharacters())
+      }
+    },
+    [endOfPages],
+  )
 
-  const onSortPressed = () => {
+  const onSortPressed = React.useCallback(() => {
     setDoSort((prev) => !prev)
-  }
+  }, [])
+
+  const extractKey = React.useCallback((item) => item.id, [])
+
+  useEffect(() => {
+    dispatch(actionRequestCharacters())
+  }, [])
 
   return (
     <View style={sty.container}>
@@ -82,17 +87,17 @@ export default () => {
         </TouchableOpacity>
       </View>
       <View style={sty.list}>
-        <If condition={charactersArray.length > 0}>
+        <If condition={flatListData.length > 0}>
           <FlatList
-            data={charactersArray}
+            data={flatListData}
             renderItem={renderItem}
-            keyExtractor={(item) => item.id}
+            keyExtractor={extractKey}
             onEndReached={onEndReached}
             onEndReachedThreshold={0.2}
             ListFooterComponent={renderFooter}
           />
         </If>
-        <If condition={charactersArray.length === 0}>
+        <If condition={flatListData.length === 0}>
           <View style={{ alignItems: 'center', justifyContent: 'center' }}>
             <Spinner size={130} type={'Pulse'} color={'#6FF0FF'} />
           </View>

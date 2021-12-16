@@ -10,9 +10,8 @@ import {
   concat,
   merge,
 } from 'rxjs'
-import { map, catchError, finalize, delay } from 'rxjs/operators'
+import { map, catchError } from 'rxjs/operators'
 import { requestAHomeWorld } from '../../services/api/homeworlds'
-import { createMultipleRequestsPromise } from '../../services/axiosManager.js'
 import {
   actionOnRequestAHomeworldSuccess,
   actionOnRequestMultipleWorldsSuccess,
