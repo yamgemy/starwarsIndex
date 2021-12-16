@@ -1,7 +1,5 @@
 import axios from 'axios'
 import { serverConfigs } from '../../enums'
-import MyLogger from '../dev/MyLogger'
-const devLog = MyLogger(true, 'axiosManager')
 
 const createCancelConfigs = () => {
   const CancelToken = axios.CancelToken

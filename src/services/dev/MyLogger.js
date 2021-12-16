@@ -15,4 +15,4 @@ export default MyLogger
 
 //usage:
 //const devLog = MyLogger(true, 'componentName') //a new instance
-//devLog('message', 10) //
+//devLog('message', 10) //number refers to line number in file

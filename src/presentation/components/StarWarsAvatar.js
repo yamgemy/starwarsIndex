@@ -2,8 +2,6 @@ import React from 'react'
 import { View, StyleSheet } from 'react-native'
 import { Avatar } from 'react-native-nice-avatar'
 import resources from '../../assets/avatarResourcesMap.json'
-import MyLogger from '../../services/dev/MyLogger'
-const devLog = MyLogger(true, 'StarWarsAvatar')
 
 export default React.memo(
   ({ character }) => {
@@ -22,7 +20,6 @@ export default React.memo(
     )
   },
   (prev, next) => {
-    devLog(prev, 27)
     if (prev.character.id === next.character.id) {
       return true
     }
