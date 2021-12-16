@@ -26,7 +26,7 @@ export default () => {
       const endReached =
         -1 !==
         generalReducer.failedRequests.findIndex(
-          (i) => i.type === TYPE.REQUEST_CHARACTERS && 'error' in i,
+          (item) => item.type === TYPE.REQUEST_CHARACTERS && 'error' in item,
         )
       return {
         endReached,

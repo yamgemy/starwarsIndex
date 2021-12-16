@@ -29,7 +29,7 @@ const configureAxios = () => {
       const { status, message } = error.toJSON()
       //must use reject: this falls into the retryAxiosPromise catch block
       if (status === null && message.includes('timeout')) {
-        return Promise.reject({ status: 503 }) //arbitrary payload
+        return Promise.reject({ status: 503, timeout: true }) //arbitrary payload
       }
       return Promise.reject(error) //everything else
     },
@@ -37,6 +37,7 @@ const configureAxios = () => {
   return instance
 }
 
+//this is currently set to retry only when server gives absolutely no response
 const createRequestRetryPromise = (
   defaultConfig,
   totalTries = serverConfigs.defaultTotalAxiosTries,
@@ -56,19 +57,17 @@ const createRequestRetryPromise = (
   return new Promise(async (mainResolve, mainReject) => {
     //the cancel token must be unique to each axios call, otherwise timeout does not work on retries
     const { source, config } = createCancelConfigs()
-    const combinedConfig = { ...defaultConfig, ...config }
     const anAxiosInstance = configureAxios()
     try {
-      const result = await anAxiosInstance(combinedConfig) //result is also available in intercepter
+      const result = await anAxiosInstance({ ...defaultConfig, ...config })
       mainResolve(Promise.resolve(result)) //this goes into the from(...) function inside epics
     } catch (e) {
-      if (e.status !== 503) {
-        //pass an object instead of Promise because catchError(e) block deals with object
-        mainReject(e)
+      if (e.status === 503 && e.timeout) {
+        source.cancel('previous axios requst cancelled on timeout')
+        mainReject(retryAxiosPromise(defaultConfig, totalTries - 1))
         return
       }
-      source.cancel('previous axios requst cancelled on timeout')
-      mainReject(retryAxiosPromise(defaultConfig, totalTries - 1))
+      mainReject(e) //pass an object instead of Promise because catchError(e) block deals with object
     }
   })
 }

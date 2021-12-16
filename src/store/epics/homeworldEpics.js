@@ -36,7 +36,7 @@ const requestAHomeWorldEpic = (action$, state$) => {
         }), //end map
         catchError((e) => {
           devLog(e, 36)
-          return of(onRequestFailed(action))
+          return of(onRequestFailed(action, e))
         }),
       ) //end 2nd pipe
     }),
@@ -52,9 +52,9 @@ const requestMultipleWorldsEpic = (action$, state$) => {
       const uniqueWorldsRequests = getUniqueArrayOfObjects(
         action.payload,
         'worldId',
-      ).reduce((accu, i) => {
-        if (!homeworlds[i.worldId]) {
-          return [...accu, requestAHomeWorld(i.worldId)]
+      ).reduce((accu, item) => {
+        if (!homeworlds[item.worldId]) {
+          return [...accu, requestAHomeWorld(item.worldId)]
         } else {
           return accu
         }
@@ -66,7 +66,7 @@ const requestMultipleWorldsEpic = (action$, state$) => {
         }),
         catchError((e) => {
           devLog(e, 72)
-          return of(onRequestFailed(action))
+          return of(onRequestFailed(action, e))
         }),
       )
     }),

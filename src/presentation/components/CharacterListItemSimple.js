@@ -12,12 +12,6 @@ export default React.memo(
       world: homeWorldsReducer.homeworlds[worldId],
     }))
 
-    useEffect(() => {
-      if (world) {
-        devLog(world.name, 14)
-      }
-    }, [world])
-
     const onCharPressed = () => {
       navigate('CharacterDetails', character)
     }
@@ -29,7 +23,6 @@ export default React.memo(
             <View style={sty.top}>
               <Text style={sty.name}>{character.name}</Text>
             </View>
-
             <View style={sty.bottom}>
               <Text style={sty.world}>Homeworld:</Text>
               <If condition={world !== undefined}>
