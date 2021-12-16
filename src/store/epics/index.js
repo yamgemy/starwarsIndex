@@ -1,12 +1,12 @@
 import { combineEpics } from 'redux-observable'
+import { requestCharactersEpic } from './charactersEpics'
 import {
-  requestCharactersEpic,
-  onRequestCharactersSuccessEpic,
-} from './charactersEpics'
-import { requestAHomeWorldEpic } from './homeworldEpics'
+  requestAHomeWorldEpic,
+  requestMultipleWorldsEpic,
+} from './homeworldEpics'
 
 export default RootEpic = combineEpics(
   requestCharactersEpic,
-  onRequestCharactersSuccessEpic,
+  requestMultipleWorldsEpic,
   requestAHomeWorldEpic,
 )

@@ -21,7 +21,7 @@ const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
   stateReconciler: autoMergeLevel1,
-  blacklist: ['charactersReducer', 'homeWorldsReducer'],
+  blacklist: ['charactersReducer', 'homeWorldsReducer', 'generalReducer'],
 }
 
 const persistedRootReducer = persistReducer(persistConfig, rootReducer)
