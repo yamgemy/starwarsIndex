@@ -24,10 +24,7 @@ export default () => {
     ({ charactersReducer, generalReducer }) => {
       const charactersArray = Object.values(charactersReducer.characters)
       const endOfPages =
-        -1 !==
-        generalReducer.failedRequests.findIndex(
-          (item) => item.type === TYPE.REQUEST_CHARACTERS && 'error' in item,
-        )
+        generalReducer.failedRequests[`${TYPE.REQUEST_CHARACTERS}404`]
       return {
         endOfPages,
         flatListData: doSort
@@ -116,7 +113,6 @@ const sty = StyleSheet.create({
   },
   topPanel: {
     backgroundColor: '#2A494D',
-    //height: '5%',
     height: 40,
     width: '100%',
     flexDirection: 'row',
