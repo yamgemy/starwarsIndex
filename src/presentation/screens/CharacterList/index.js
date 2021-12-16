@@ -9,12 +9,10 @@ import {
 } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { actionRequestCharacters } from '../../../store/actions/charactersActions'
-import MyLogger from '../../../services/dev/MyLogger'
 import CharacterListItem from '../../components/CharacterListItem'
 import { sortArrayByItemName } from '../../../services/dataParser.js'
 import { CHARACTERS_TYPES as TYPE } from '../../../store/types'
 import Spinner from 'react-native-spinkit'
-const devLog = MyLogger(true, 'CharacterList')
 const sortIcon = require('../../../assets/sortAZ.png')
 
 export default () => {
@@ -53,7 +51,6 @@ export default () => {
 
   const onEndReached = React.useCallback(
     ({ distanceFromEnd }) => {
-      devLog(distanceFromEnd, 25)
       if (endOfPages === false) {
         dispatch(actionRequestCharacters())
       }

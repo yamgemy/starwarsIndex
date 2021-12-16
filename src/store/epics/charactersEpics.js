@@ -16,8 +16,6 @@ import { onRequestFailed } from '../actions/generalActions'
 import { actionOnRequestCharactersSuccess } from '../actions/charactersActions'
 import { actionRequestMultipleWorlds } from '../actions/homeworldsActions'
 import { getIdFromUrl } from '../../services/dataParser.js'
-import MyLogger from '../../services/dev/MyLogger'
-const devLog = MyLogger(true, 'charactersEpics')
 
 const requestCharactersEpic = (action$, state$) => {
   return action$.pipe(
@@ -39,7 +37,6 @@ const requestCharactersEpic = (action$, state$) => {
           ])
         }),
         catchError((e) => {
-          devLog(e, 36)
           return of(onRequestFailed(action, e))
         }),
       )

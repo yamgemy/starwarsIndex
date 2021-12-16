@@ -18,8 +18,6 @@ import {
 } from '../actions/homeworldsActions'
 import { onRequestFailed } from '../actions/generalActions'
 import { getUniqueArrayOfObjects } from '../../services/dataParser.js'
-import MyLogger from '../../services/dev/MyLogger'
-const devLog = MyLogger(true, 'homeworldEpics')
 
 //not in use
 const requestAHomeWorldEpic = (action$, state$) => {
@@ -30,11 +28,9 @@ const requestAHomeWorldEpic = (action$, state$) => {
       return from(requestAHomeWorld(worldId)).pipe(
         map((result) => {
           const { data } = result
-          devLog(data.name, 26)
           return actionOnRequestAHomeworldSuccess(worldId, data)
         }), //end map
         catchError((e) => {
-          devLog(e, 36)
           return of(onRequestFailed(action, e))
         }),
       ) //end 2nd pipe
@@ -64,7 +60,6 @@ const requestMultipleWorldsEpic = (action$, state$) => {
           return actionOnRequestMultipleWorldsSuccess(worlds)
         }),
         catchError((e) => {
-          devLog(e, 72)
           return of(onRequestFailed(action, e))
         }),
       )

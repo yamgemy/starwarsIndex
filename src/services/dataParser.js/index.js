@@ -1,6 +1,4 @@
 import uniqBy from 'lodash/uniqBy'
-import MyLogger from '../dev/MyLogger'
-const devLog = MyLogger(true, 'dataParser')
 
 export const getIdFromUrl = (url) => {
   //assumes all targetProp is a string url ending with '/'
